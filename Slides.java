@@ -10,7 +10,6 @@ public class Slides {
 
     public Slides(HardwareMap hw, String name, int slideMotorRPM) {
         slideMotor = hw.get(DcMotor.class, name);
-        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorRPM = slideMotorRPM;
     }
 
@@ -23,8 +22,12 @@ public class Slides {
     }
 
     public void runToTargetPosition(int targetPosition, double power) {
+        setDirectionForward();
         slideMotor.setTargetPosition(targetPosition);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotor.setPower(power);
+        while (slideMotor.isBusy());
+        slideMotor.setPower(0);
     }
 
     public void stopSlide() {
