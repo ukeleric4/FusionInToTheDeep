@@ -22,9 +22,9 @@ public class Slides {
     }
 
     public void runToTargetPosition(int targetPosition, double power) {
-        setDirectionForward();
         slideMotor.setTargetPosition(targetPosition);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setDirectionForward();
         slideMotor.setPower(power);
         while (slideMotor.isBusy());
         slideMotor.setPower(0);

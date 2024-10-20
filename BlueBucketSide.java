@@ -3,88 +3,85 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous
 public class BlueBucketSide extends OpMode {
-    public Slides outtakeSlide;
-    public Slides intakeSlide;
-    public Servos outtakeServoClaw;
-    public Servos outtakeServo;
-    public Servos turnServo;
-    public Servos pickupServo;
-    public IntakeClaw intakeClaw;
+    public Slides slide;
+    public Motors panningMotor;
+    public Servos claw;
+    public Servos orientation;
+    public Servos panningServo;
 
     public int runFrames;
 
     @Override
     public void init() {
-        outtakeSlide = new Slides(hardwareMap, "outtakemotor", 6000);
-        intakeSlide = new Slides(hardwareMap, "intakemotor", 6000);
-        outtakeServoClaw = new Servos(hardwareMap, "outtakeservoclaw");
-        outtakeServo = new Servos(hardwareMap, "outtakeservo");
-        turnServo = new Servos(hardwareMap, "turnservo");
-        pickupServo = new Servos(hardwareMap, "pickupservo");
-        intakeClaw = new IntakeClaw(hardwareMap);
+        slide = new Slides(hardwareMap, "slide", 6000);
+        panningMotor = new Motors(hardwareMap, "panningmotor");
+        claw = new Servos(hardwareMap, "claw");
+        orientation = new Servos(hardwareMap, "orientation");
+        panningServo = new Servos(hardwareMap, "panning");
+
         runFrames = 0;
     }
 
     @Override
     public void loop() {
-        if (runFrames == 0) {
-            getBlock(1000);
-        }
+        deposit(1000);
+
+        runFrames++;
     }
 
-    public void depositBlock(int targetPos) {
-        outtakeServo.moveForwardMAX();
-        outtakeServoClaw.moveForwardMAX();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        outtakeSlide.runToTargetPosition(targetPos, 1.0);
-        outtakeServo.moveBackwardMIN();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        outtakeServoClaw.moveBackwardMIN();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        outtakeServoClaw.moveSpecificPos(0.5);
-        outtakeServo.moveForwardMAX();
-        outtakeSlide.runToTargetPosition(0, 1.0);
+    public void pickup(int targetPos) {
+        /*
+        Start pos:
+            Claw: open
+            Orientation: horizontal
+            Panning (servo): up
+            Panning (motor): down
+            Slide: back
+         */
+
+        // Move slide out
+        slide.runToTargetPosition(targetPos, 1.0);
+        // Move panning down
+        panningServo.moveForwardMAX();
+        // Orient (add)
+
+        // Pick up
+        claw.moveForwardMAX();
+        // Orient back to horizontal (add)
+
+        // Move panning up
+        panningServo.moveBackwardMIN();
+        // Move slide back
+        slide.runToTargetPosition(0, 1.0);
     }
 
-    public void getBlock(int targetPos) {
-        intakeSlide.runToTargetPosition(targetPos, 1.0);
-        intakeClaw.checkHuskyLens();
-        intakeClaw.moveClaw();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        pickupServo.moveForwardMAX();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        intakeSlide.runToTargetPosition(0, 1.0);
-        turnServo.moveForwardMAX();
-        pickupServo.moveBackwardMIN();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        pickupServo.moveSpecificPos(0.7);
-        turnServo.moveBackwardMIN();
+    public void deposit(int targetPos) {
+        /*
+        Start pos:
+            Claw: closed
+            Orientation: horizontal
+            Panning (servo): up
+            Panning (motor): down
+            Slide: back
+         */
+
+        // Pan up
+        panningMotor.runToTargetPosition(500, 1.0);
+        // Move slide up
+        slide.runToTargetPosition(targetPos, 1.0);
+        // Move panning servo forward
+        panningServo.moveForwardMAX();
+        // Deposit block
+        claw.moveBackwardMIN();
+        // Move panning servo back
+        panningServo.moveBackwardMIN();
+        // Move Slide down
+        slide.runToTargetPosition(0, 1.0);
+        // Pan down back to original position
+        panningMotor.runToTargetPosition(0, 1.0);
     }
 }
