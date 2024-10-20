@@ -28,12 +28,23 @@ public class BlueBucketSide extends OpMode {
 
     @Override
     public void loop() {
-        deposit(1000);
+        try {
+            pickup(1500);
+            deposit(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+//        bringBack();
 
         runFrames++;
     }
 
-    public void pickup(int targetPos) {
+    public void bringBack() {
+        panningMotor.runToTargetPosition(3000, 1.0, "forward");
+    }
+
+    public void pickup(int targetPos) throws InterruptedException {
         /*
         Start pos:
             Claw: open
@@ -44,22 +55,22 @@ public class BlueBucketSide extends OpMode {
          */
 
         // Move slide out
-        slide.runToTargetPosition(targetPos, 1.0);
+        slide.runToTargetPosition(targetPos, 1.0, "forward");
         // Move panning down
-        panningServo.moveForwardMAX();
+        panningServo.moveBackwardMIN();
+        Thread.sleep(2500);
         // Orient (add)
 
         // Pick up
         claw.moveForwardMAX();
+        Thread.sleep(500);
         // Orient back to horizontal (add)
 
-        // Move panning up
-        panningServo.moveBackwardMIN();
         // Move slide back
-        slide.runToTargetPosition(0, 1.0);
+        slide.runToTargetPosition(0, 1.0, "backward");
     }
 
-    public void deposit(int targetPos) {
+    public void deposit(int targetPos) throws InterruptedException {
         /*
         Start pos:
             Claw: closed
@@ -70,18 +81,23 @@ public class BlueBucketSide extends OpMode {
          */
 
         // Pan up
-        panningMotor.runToTargetPosition(500, 1.0);
+        panningMotor.runToTargetPosition(3000, 1.0, "backward");
+        Thread.sleep(1500);
         // Move slide up
-        slide.runToTargetPosition(targetPos, 1.0);
-        // Move panning servo forward
+        slide.runToTargetPosition(targetPos, 1.0, "forward");
+        // Move panning up
         panningServo.moveForwardMAX();
+        Thread.sleep(500);
         // Deposit block
         claw.moveBackwardMIN();
-        // Move panning servo back
+        Thread.sleep(500);
+        // Move panning back
         panningServo.moveBackwardMIN();
         // Move Slide down
-        slide.runToTargetPosition(0, 1.0);
+        slide.runToTargetPosition(0, 1.0, "backward");
+        panningServo.moveForwardMAX();
         // Pan down back to original position
-        panningMotor.runToTargetPosition(0, 1.0);
+        panningMotor.runToTargetPosition(0, 1.0, "forward");
+        Thread.sleep(2000);
     }
 }

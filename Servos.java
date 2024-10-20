@@ -9,9 +9,7 @@ public class Servos {
     static final double MAX_POS = 1.0;
     static final double MIN_POS = 0.0;
 
-    public Servos(HardwareMap hw, String name) {
-        servo = hw.get(Servo.class, name);
-    }
+    public Servos(HardwareMap hw, String name) { servo = hw.get(Servo.class, name); }
 
     public void moveForwardMAX() {
         servo.setPosition(MAX_POS);

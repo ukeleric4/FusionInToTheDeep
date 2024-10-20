@@ -4,11 +4,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.Objects;
+
 public class Motors {
     public DcMotor motor;
 
     public Motors(HardwareMap hw, String name) {
         motor = hw.get(DcMotor.class, name);
+        setModeResetEncoder();
     }
 
     public void rotateForward(double power) {
@@ -22,10 +25,16 @@ public class Motors {
         motor.setPower(0);
     }
 
-    public void runToTargetPosition(int targetPos, double power) {
+    public void setModeResetEncoder() { motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); }
+
+    public void runToTargetPosition(int targetPos, double power, String direction) {
+        if (Objects.equals(direction, "forward")) {
+            setDirectionForward();
+        } else {
+            setDirectionReverse();
+        }
         motor.setTargetPosition(targetPos);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        setDirectionForward();
         motor.setPower(power);
         while (motor.isBusy());
         motor.setPower(0);
