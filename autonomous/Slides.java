@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -27,7 +29,7 @@ public class Slides {
     public void setModeResetEncoder() { slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); }
 
     public void runToTargetPosition(int targetPosition, double power, String direction) {
-
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         if (Objects.equals(direction, "forward")) {
             setDirectionForward();
         } else {
@@ -40,8 +42,30 @@ public class Slides {
         slideMotor.setPower(0);
     }
 
-    public void runForTime() {
+    public void runForward(double power, int timeMs) {
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDirectionForward();
+        slideMotor.setPower(power);
+        if (timeMs > 0 ) {
+            try {
+                sleep(timeMs);
+            } catch (InterruptedException e) {
+            }
+            stopSlide();
+        }
+    }
 
+    public void runBackward(double power, int timeMs) {
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDirectionReverse();
+        slideMotor.setPower(power);
+        if (timeMs > 0 ) {
+            try {
+                sleep(timeMs);
+            } catch (InterruptedException e) {
+            }
+            stopSlide();
+        }
     }
 
     public void stopSlide() {

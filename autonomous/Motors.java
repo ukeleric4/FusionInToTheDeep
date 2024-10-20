@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static java.lang.Thread.sleep;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,15 +16,30 @@ public class Motors {
         setModeResetEncoder();
     }
 
-    public void rotateForward(double power) {
-        motor.setDirection(DcMotorSimple.Direction.FORWARD);
+    public void rotateForward(double power, int timeMs) {
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDirectionForward();
         motor.setPower(power);
+        if (timeMs > 0 ) {
+            try {
+                sleep(timeMs);
+            } catch (InterruptedException e) {
+            }
+            stopRotation();
+        }
     }
 
-    public void rotateBackward(double power) {
-        motor.setDirection(DcMotorSimple.Direction.REVERSE);
+    public void rotateBackward(double power, int timeMs) {
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDirectionReverse();
         motor.setPower(power);
-        motor.setPower(0);
+        if (timeMs > 0 ) {
+            try {
+                sleep(timeMs);
+            } catch (InterruptedException e) {
+            }
+            stopRotation();
+        }
     }
 
     public void setModeResetEncoder() { motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); }
