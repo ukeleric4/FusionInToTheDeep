@@ -12,10 +12,14 @@ public class Slides {
     public DcMotor slideMotor;
     public int motorRPM;
 
+    boolean exit = false;
+
     public Slides(HardwareMap hw, String name, int slideMotorRPM) {
         slideMotor = hw.get(DcMotor.class, name);
         motorRPM = slideMotorRPM;
         setModeResetEncoder();
+        Thread te = new Thread(name);
+        te.start();
     }
 
     public void setDirectionForward() {

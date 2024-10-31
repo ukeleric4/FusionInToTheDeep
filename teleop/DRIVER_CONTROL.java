@@ -22,8 +22,12 @@ public class DRIVER_CONTROL extends LinearOpMode /*implements Runnable*/ {
     public DcMotor fr;
     public DcMotor br;
 
+    boolean dpadRightPressed;
+    boolean dpadLeftPressed;
+    boolean depositDone = false;
+
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
@@ -76,6 +80,30 @@ public class DRIVER_CONTROL extends LinearOpMode /*implements Runnable*/ {
                 claw.moveBackwardMIN();
             }
 
+            if (gamepad1.dpad_right && !dpadRightPressed && !depositDone) {
+                // Pan up
+                panningMotor.runToTargetPosition(3000, 1.0, "backward");
+                // Move slide up
+                slide.runToTargetPosition(3000, 1.0, "forward");
+                // Move panning up
+                panningServo.moveForwardMAX();
+                Thread.sleep(250);
+                // Deposit block
+                claw.moveBackwardMIN();
+                Thread.sleep(250);
+                // Move panning back
+//                panningServo.moveBackwardMIN();
+                // Move Slide down
+                slide.runToTargetPosition(0, 1.0, "forward");
+//                panningServo.moveForwardMAX();
+                // Pan down back to original position
+                panningMotor.runToTargetPosition(0, 1.0, "forward");
+                Thread.sleep(1000);
+                depositDone = true;
+            } else if (gamepad1.dpad_left && !dpadLeftPressed) {
+
+            }
+
             double y = -gamepad2.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad2.left_stick_x * 1.1; // Counteract imperfect strafing
             double rx = gamepad2.right_stick_x;
@@ -88,7 +116,6 @@ public class DRIVER_CONTROL extends LinearOpMode /*implements Runnable*/ {
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
             double backRightPower = (y + x - rx) / denominator;
-
 
             double velocity;
 
@@ -104,6 +131,12 @@ public class DRIVER_CONTROL extends LinearOpMode /*implements Runnable*/ {
             bl.setPower(backLeftPower*velocity);
             fr.setPower(frontRightPower*velocity);
             br.setPower(backRightPower*velocity);
+
+            dpadLeftPressed = gamepad1.dpad_left;
+            dpadRightPressed = gamepad1.dpad_right;
+            if (gamepad1.dpad_right) {
+                depositDone = false;
+            }
         }
     }
 }

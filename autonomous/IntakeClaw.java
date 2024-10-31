@@ -13,7 +13,7 @@ public class IntakeClaw {
 
     public IntakeClaw(HardwareMap hardwareMap) {
         huskyLensColor = new HuskyLenses(hardwareMap, "huskylenscolor", "color");
-        orientationServo = new Servos(hardwareMap, "orientationservo");
+        orientationServo = new Servos(hardwareMap, "orientation");
     }
 
     public void checkHuskyLens() {
@@ -26,6 +26,8 @@ public class IntakeClaw {
     }
 
     public void moveClaw() {
+        checkHuskyLens();
+
         if (rotate && huskyLensColor.currentTarget != null) {
             orientationServo.moveSpecificPos(SIDEROTATE);
         } else {
