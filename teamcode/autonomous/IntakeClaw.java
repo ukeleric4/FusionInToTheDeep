@@ -8,11 +8,11 @@ public class IntakeClaw {
     public int rotateDegrees;
     public boolean rotate;
 
-    public double SIDEROTATE = 0.7;
+    public double SIDEROTATE = 0.5;
     public double VERTICALROTATE = 0.0;
 
-    public IntakeClaw(HardwareMap hardwareMap) {
-        huskyLensColor = new HuskyLenses(hardwareMap, "huskylenscolor", "color");
+    public void getHardware(HardwareMap hardwareMap) {
+        huskyLensColor = new HuskyLenses(hardwareMap, "frontlens", "color");
         orientationServo = new Servos(hardwareMap, "orientation");
     }
 
@@ -25,7 +25,7 @@ public class IntakeClaw {
         }
     }
 
-    public void moveClaw() {
+    public void moveClawLeft() {
         checkHuskyLens();
 
         if (rotate && huskyLensColor.currentTarget != null) {

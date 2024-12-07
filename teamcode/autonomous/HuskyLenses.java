@@ -39,6 +39,10 @@ public class HuskyLenses {
         return null;
     }
 
+    public void updateObservedObjects() {
+        observedObjects = huskyLens.blocks();
+    }
+
     public int getTargetId() {
         return currentTarget.id;
     }
